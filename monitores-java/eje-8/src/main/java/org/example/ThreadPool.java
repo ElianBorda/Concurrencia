@@ -8,26 +8,27 @@ public class ThreadPool {
     private final ArrayList<Worker> workers;
     private final int amountWorkers;
 
-    public ThreadPool(int amountWorkers, int amountTask){
-        Buffer aBuffer = new Buffer(amountTask, this);
-        this.buffer = assignTask(aBuffer, amountTask);
+    public ThreadPool(int dimension, int amountWorkers){
+        this.buffer = new Buffer(dimension);
         this.workers = createWorkers(amountWorkers);
         this.amountWorkers = amountWorkers;
+        this.runWorkers();
     }
 
-
-    public synchronized void launch() {
-        for (Worker worker: this.workers) {
-            worker.start();
+    private void runWorkers() {
+        for (Worker aWorker : this.workers) {
+            aWorker.start();
         }
+    }
+
+    public synchronized void launch(Task aTask) {
+        this.buffer.put(aTask);
     }
 
     public synchronized void stop(){
-        for (int i = 0; i < this.amountWorkers; i++) {
+        for (Worker aWorker : this.workers) {
             this.buffer.put(new PoisonPill());
         }
-        notifyAll();
-        System.out.println("se notifico");
     }
 
     public int getAmountWorkers() {
@@ -39,16 +40,7 @@ public class ThreadPool {
         for (int i = 0; i < amountWorkers; i++) {
             someWorkers.add(new Worker(this.buffer));
         }
-
         return someWorkers;
-    }
-
-    private Buffer assignTask(Buffer aBuffer, int amountTask) {
-        for (int i = 0; i < amountTask; i++) {
-            aBuffer.put(new DummyTask());
-        }
-
-        return aBuffer;
     }
 
 
