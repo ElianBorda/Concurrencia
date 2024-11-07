@@ -10,4 +10,16 @@ public class RW {
         return "todo";
     }
 
+    public synchronized String endRead(){
+        return "todo";
+    }
+
+    public synchronized void beginWrite(){
+
+    }
+
+    public synchronized void endWrite(){
+
+    }
+
 }
